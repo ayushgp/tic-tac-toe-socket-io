@@ -72,8 +72,7 @@
 	});
 
 	socket.on('gameEnd', function(data){
-		var opponentType = playerType == P1 ? P2 : P1;
-		alert('Player ' + opponentType + ' wins!');
+		alert(data.message);
 		location.reload();
 	})
 
@@ -126,28 +125,45 @@
 			if(board[i][0] == playerType && 
 				board[i][1] == playerType && 
 				board[i][2] == playerType )	{
-					announceWinner(playerType);
+					announceWinner();
 					return;
 			}
 			else if(board[0][i] == playerType && 
 				board[1][i] == playerType && 
 				board[2][i] == playerType) {
-					announceWinner(playerType);
+					announceWinner();
 					return;
 			}
 		}
 		if(board[0][0] == playerType && 
 			board[1][1] == playerType && 
 			board[2][2] == playerType)
-			announceWinner(playerType);
+			announceWinner();
 		else if(board[2][0] == playerType && 
 			board[1][1] == playerType && 
 			board[0][2] == playerType)
-			announceWinner(playerType);
+			announceWinner();
+		var tied = checkTie();
+		if(tied){
+			socket.emit('gameEnded', {room: roomID, message: 'Game Tied :('});
+			alert('Game Tied :(');
+			location.reload();	
+		}
 	}
 
-	function announceWinner(player){
-		socket.emit('gameEnded', {room: roomID, message: 'Player ' + player + ' wins!'});
+	function checkTie(){
+		for(var i = 0; i < 3; i++){
+			for(var j = 0; j < 3; j++){
+				if(board[i][j] == ''){
+					return false;
+				}
+			}	
+		}
+		return true;
+	}
+
+	function announceWinner(){
+		socket.emit('gameEnded', {room: roomID, message: 'Player ' + playerType + ' wins!'});
 		alert('Player ' + playerType + ' wins!');
 		location.reload();
 	}
