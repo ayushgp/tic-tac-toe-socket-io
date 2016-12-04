@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Tic Tac Toe</title>
+		<link rel="stylesheet" href="main.css">
+	</head>
+	<body>
+		<div class="menu">
+			<input type="text" name="name" id="nameNew" placeholder="Enter your name">
+			<button id="new">New Game</button>
+			<br><br>
+			<input type="text" name="name" id="nameJoin" placeholder="Enter your name">
+			<input type="text" name="room" id="room" placeholder="Enter Game ID">
+			<button id="join">Join Game</button>
+		</div>
+		<div class="gameBoard">
+			<h2 id="userHello"></h2>
+			<h3 id="turn"></h3>
+			<table>
+				<tr>
+					<td><button class="tile" id="button_00"></button></td>
+					<td><button class="tile" id="button_01"></button></td>
+					<td><button class="tile" id="button_02"></button></td>
+				</tr>
+				<tr>
+					<td><button class="tile" id="button_10"></button></td>
+					<td><button class="tile" id="button_11"></button></td>
+					<td><button class="tile" id="button_12"></button></td>
+				</tr>
+				<tr>
+					<td><button class="tile" id="button_20"></button></td>
+					<td><button class="tile" id="button_21"></button></td>
+					<td><button class="tile" id="button_22"></button></td>
+				</tr>
+			</table>
+		</div>
+		<script src="node_modules/jquery/dist/jquery.min.js"></script>
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="main.js"></script>
+	</body>
+</html>
