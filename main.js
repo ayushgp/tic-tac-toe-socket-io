@@ -2,8 +2,8 @@
 (function() {
 
 	var P1 = 'X', P2 = 'O';
-	var socket = io.connect('http://tic-tac-toe-realtime.herokuapp.com'),
-	// var socket = io.connect('http://localhost:5000'),
+	// var socket = io.connect('http://tic-tac-toe-realtime.herokuapp.com'),
+	var socket = io.connect('http://localhost:5000'),
 		player,
 		game;
 
@@ -253,7 +253,7 @@
 	 */ 
 	$('#join').on('click', function(){
 		var name = $('#nameJoin').val();
-		roomID = $('#room').val();
+		var roomID = $('#room').val();
 		if(!name || !roomID){
 			alert('Please enter your name and game ID.');
 			return;
@@ -316,6 +316,7 @@
 	 */
 	socket.on('gameEnd', function(data){
 		game.endGame(data.message);
+		socket.leave(data.room);
 	})
 
 	/**
