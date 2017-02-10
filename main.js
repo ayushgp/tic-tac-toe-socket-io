@@ -4,8 +4,8 @@
 
 	var P1 = 'X', P2 = 'O';
 	//Connect to Socket.IO
-	//var socket = io.connect('http://tic-tac-toe-realtime.herokuapp.com');
-	var socket = io.connect('http://localhost:5000'),
+	var socket = io.connect('http://tic-tac-toe-realtime.herokuapp.com'),
+	// var socket = io.connect('http://localhost:5000'),
 		player,
 		game;
 
