@@ -27,7 +27,7 @@ io.on('connection', function(socket){
 			socket.join(data.room);
 			console.log(io.nsps['/'].adapter.rooms[data.room]);
 			socket.broadcast.to(data.room).emit('player1', {});
-			socket.emit('player2', {name: data.name })
+			socket.emit('player2', {name: data.name, room: data.room })
 		}
 		else {
 			socket.emit('err', {message: 'Sorry, The room is full!'});
