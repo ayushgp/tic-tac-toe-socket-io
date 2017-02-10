@@ -3,42 +3,48 @@
 	<head>
 		<title>Tic Tac Toe</title>
 		<link rel="stylesheet" href="main.css">
+		<link rel="stylesheet" href="node_modules/skeleton-css/css/skeleton.css">
 	</head>
 	<body>
-		<div class="menu">
-			<h3>How To Play</h3>
-			<ol>
-				<li>Player 1 Create a new game by entering the username</li>
-				<li>Player 2 Enter another username and the room id that is displayed on first window.</li>
-				<li>Click on join game. </li>
-			</ol>
-			<input type="text" name="name" id="nameNew" placeholder="Enter your name">
-			<button id="new">New Game</button>
-			<br><br>
-			<input type="text" name="name" id="nameJoin" placeholder="Enter your name">
-			<input type="text" name="room" id="room" placeholder="Enter Game ID">
-			<button id="join">Join Game</button>
-		</div>
-		<div class="gameBoard">
-			<h2 id="userHello"></h2>
-			<h3 id="turn"></h3>
-			<table>
-				<tr>
-					<td><button class="tile" id="button_00"></button></td>
-					<td><button class="tile" id="button_01"></button></td>
-					<td><button class="tile" id="button_02"></button></td>
-				</tr>
-				<tr>
-					<td><button class="tile" id="button_10"></button></td>
-					<td><button class="tile" id="button_11"></button></td>
-					<td><button class="tile" id="button_12"></button></td>
-				</tr>
-				<tr>
-					<td><button class="tile" id="button_20"></button></td>
-					<td><button class="tile" id="button_21"></button></td>
-					<td><button class="tile" id="button_22"></button></td>
-				</tr>
-			</table>
+		<div class="container">
+			<div class="menu">
+				<h1>Tic - Tac - Toe</h1>
+				<h3>How To Play</h3>
+				<ol>
+					<li>Player 1 Create a new game by entering the username</li>
+					<li>Player 2 Enter another username and the room id that is displayed on first window.</li>
+					<li>Click on join game. </li>
+				</ol>
+				<h4>Create a new Game</h4>
+				<input type="text" name="name" id="nameNew" placeholder="Enter your name" required>
+				<button id="new">New Game</button>
+				<br><br>
+				<h4>Join an existing game</h4>
+				<input type="text" name="name" id="nameJoin" placeholder="Enter your name" required>
+				<input type="text" name="room" id="room" placeholder="Enter Game ID" required>
+				<button id="join">Join Game</button>
+			</div>
+			<div class="gameBoard">
+				<h2 id="userHello"></h2>
+				<h3 id="turn"></h3>
+				<table class="center">
+					<tr>
+						<td><button class="tile" id="button_00"></button></td>
+						<td><button class="tile" id="button_01"></button></td>
+						<td><button class="tile" id="button_02"></button></td>
+					</tr>
+					<tr>
+						<td><button class="tile" id="button_10"></button></td>
+						<td><button class="tile" id="button_11"></button></td>
+						<td><button class="tile" id="button_12"></button></td>
+					</tr>
+					<tr>
+						<td><button class="tile" id="button_20"></button></td>
+						<td><button class="tile" id="button_21"></button></td>
+						<td><button class="tile" id="button_22"></button></td>
+					</tr>
+				</table>
+			</div>
 		</div>
 		<script src="node_modules/jquery/dist/jquery.min.js"></script>
 		<script src="/socket.io/socket.io.js"></script>

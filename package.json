@@ -13,6 +13,8 @@
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
     "jquery": "^3.1.1",
+    "skeleton": "^0.1.2",
+    "skeleton-css": "^2.0.4",
     "socket.io": "^1.7.1"
   }
 }

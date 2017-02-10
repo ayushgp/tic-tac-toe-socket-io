@@ -8,3 +8,7 @@
 .gameBoard{
 	display: none;
 }
+
+.center{
+	margin: 0 auto;
+}
