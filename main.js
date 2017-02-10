@@ -5,18 +5,16 @@
 	var P1 = 'X', P2 = 'O';
 	//Connect to Socket.IO
 	//var socket = io.connect('http://tic-tac-toe-realtime.herokuapp.com');
-	var socket = io.connect('http://localhost:5000');
-	var currentTurn;
-	var player;
-	var game;
-	var roomID;
-	var board = [];
+	var socket = io.connect('http://localhost:5000'),
+		player,
+		game;
 
 	//Game Class Definition
 	
 	var Game = function(roomId){
 		this.roomId = roomId;
 		this.board = [];
+		this.moves = 0;
 	}
 
 	Game.prototype.getRoomId = function(){
@@ -48,12 +46,13 @@
 					}
 
 					//Update board after your turn.
-					var row = this.id.split('_')[1][0];
-					var col = this.id.split('_')[1][1];
+					var row = parseInt(this.id.split('_')[1][0]);
+					var col = parseInt(this.id.split('_')[1][1]);
 					game.playTurn(this);
 					game.updateBoard(player.getPlayerType(), row, col, this.id);
 
 					player.setCurrentTurn(false);
+					player.updatePlaysArr(1 << (row * 3 + col));
 
 					game.checkWinner();
 
@@ -66,8 +65,8 @@
 	Game.prototype.updateBoard = function(type, row, col, tile){
 		$('#'+tile).text(type);
 		$('#'+tile).prop('disabled', true);
-		console.log(row, col);
 		this.board[row][col] = type;
+		this.moves ++;
 	}
 
 	Game.prototype.playTurn = function(tile){
@@ -76,7 +75,7 @@
 			tile: clickedTile,
 			room: this.getRoomId()
 		};
-		//Emit an event to other player that you've played your turn.
+		// Emit an event to update other player that you've played your turn.
 		socket.emit('playTurn', turnObj);
 	}
 
@@ -85,51 +84,51 @@
 		location.reload();
 	}
 
-	Game.prototype.checkWinner = function(){
-		for(var i = 0; i < 3; i++){
-			if(this.board[i][0] == player.getPlayerType() && 
-				this.board[i][1] == player.getPlayerType() && 
-				this.board[i][2] == player.getPlayerType() )	{
-					announceWinner();
-					return;
+	/*
+	* To determine a win condition, each square is "tagged" from left
+	* to right, top to bottom, with successive powers of 2.  Each cell
+	* thus represents an individual bit in a 9-bit string, and a
+	* player's squares at any given time can be represented as a
+	* unique 9-bit value. A winner can thus be easily determined by
+	* checking whether the player's current 9 bits have covered any
+	* of the eight "three-in-a-row" combinations.
+	*
+	*     273                 84
+	*        \               /
+	*          1 |   2 |   4  = 7
+	*       -----+-----+-----
+	*          8 |  16 |  32  = 56
+	*       -----+-----+-----
+	*         64 | 128 | 256  = 448
+	*       =================
+	*         73   146   292
+	*
+	*  We have these numbers in the Player.wins array and for the current 
+	*  player, we've stored this information in playsArr.
+	*/
+	Game.prototype.checkWinner = function(){		
+		var currentPlayerPositions = player.getPlaysArr();
+		Player.wins.forEach(function(winningPosition){
+			if(winningPosition & currentPlayerPositions == winningPosition){
+				game.announceWinner();
 			}
-			else if(this.board[0][i] == player.getPlayerType() && 
-				this.board[1][i] == player.getPlayerType() && 
-				this.board[2][i] == player.getPlayerType()) {
-					announceWinner();
-					return;
-			}
-		}
-		if(this.board[0][0] == player.getPlayerType() && 
-			this.board[1][1] == player.getPlayerType() && 
-			this.board[2][2] == player.getPlayerType())
-			announceWinner();
-		else if(this.board[2][0] == player.getPlayerType() && 
-			this.board[1][1] == player.getPlayerType() && 
-			this.board[0][2] == player.getPlayerType())
-			announceWinner();
+		});
+
 		var tied = this.checkTie();
 		if(tied){
-			socket.emit('gameEnded', {room: roomID, message: 'Game Tied :('});
+			socket.emit('gameEnded', {room: this.getRoomId(), message: 'Game Tied :('});
 			alert('Game Tied :(');
 			location.reload();	
 		}
 	}
 
 	Game.prototype.checkTie = function(){
-		for(var i = 0; i < 3; i++){
-			for(var j = 0; j < 3; j++){
-				if(this.board[i][j] == ''){
-					return false;
-				}
-			}	
-		}
-		return true;
+		return this.moves >= 9;
 	}
 
 	Game.prototype.announceWinner = function(){
-		var message = 'Player ' + player.getPlayerName() + ' wins!';
-		socket.emit('gameEnded', {room: this.getRoomId, message: message});
+		var message = player.getPlayerName() + ' wins!';
+		socket.emit('gameEnded', {room: this.getRoomId(), message: message});
 		alert(message);
 		location.reload();
 	}
@@ -138,6 +137,17 @@
 		this.name = name;
 		this.type = type;
 		this.currentTurn = true;
+		this.playsArr = 0;
+	}
+
+	Player.wins = [7, 56, 448, 73, 146, 292, 273, 84];
+
+	Player.prototype.updatePlaysArr = function(tileValue){
+		this.playsArr += tileValue;
+	}
+
+	Player.prototype.getPlaysArr = function(tileValue){
+		return this.playsArr;
 	}
 
 	Player.prototype.setCurrentTurn = function(turn){
@@ -183,6 +193,18 @@
 		player = new Player(name, P2);
 	});
 
+	//New Game created. Update UI.
+	socket.on('newGame', function(data){
+
+		var message = 'Hello, ' + data.name + 
+			'. Please ask your friend to enter Game ID: ' +
+			data.room + '. Waiting for player 2...';
+
+		// Create game for player 1
+		game = new Game(data.room);
+		game.displayBoard(message);		
+	});
+
 	//If player creates the game, He is the the host
 	socket.on('player1', function(data){		
 		var message = 'Hello, ' + player.getPlayerName();
@@ -205,18 +227,6 @@
 		// First turn is of player 1, so set to false
 		player.setCurrentTurn(false);	
 	});	
-
-	//New Game created. Update UI.
-	socket.on('newGame', function(data){
-
-		var message = 'Hello, ' + data.name + 
-			'. <span id="joinMessage">Please ask your friend to enter Game ID: ' +
-			data.room + '. Waiting for player 2...</span>';
-
-		// Create game for player 1
-		game = new Game(data.room);
-		game.displayBoard(message);		
-	});
 
 	//Opponent played his turn. Update UI.
 	socket.on('turnPlayed', function(data){
