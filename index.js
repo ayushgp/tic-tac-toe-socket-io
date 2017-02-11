@@ -51,7 +51,7 @@ io.on('connection', function(socket){
 	 */
 	socket.on('gameEnded', function(data){
 		socket.broadcast.to(data.room).emit('gameEnd', data);
-	})
+	});
 })
 
 server.listen(process.env.PORT || 5000);
