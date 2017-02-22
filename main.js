@@ -19,6 +19,9 @@
 		this.moves = 0;
 	}
 
+	/**
+	 * Create the Game board by attaching event listeners to the buttons. 
+	 */
 	Game.prototype.createGameBoard = function(){
 		for(var i=0; i<3; i++) {
 			this.board.push(['','','']);
